@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-image: url('https://static.vecteezy.com/system/resources/previews/023/308/048/non_2x/abstract-grey-metallic-overlap-on-dark-circle-mesh-pattern-design-modern-luxury-futuristic-background-vector.jpg');
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            overflow-y: auto; 
+        }
+       .dashboard-wrapper {
+            display: flex;
+            flex-direction: column;
+            background-image: url('https://static.vecteezy.com/system/resources/previews/023/308/048/non_2x/abstract-grey-metallic-overlap-on-dark-circle-mesh-pattern-design-modern-luxury-futuristic-background-vector.jpg');
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 900px;
+            min-height: 80vh;
+            padding: 20px;
+       }
+        .dashboard-container {
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .dashboard-container h2 {
+            color:whitesmoke;
+            font-weight: 600;
+        }
+        .dashboard-container input, .dashboard-container select {
+            width: 98%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .dashboard-container button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        .dashboard-container button:hover {
+            background-color: #0056b3;
+        }
+
+
+        .user-table-container {
+            display: none;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 900px;
+            text-align: center;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .user-table-container h3 {
+            color: #343a40;
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: separate; /* Important for border-radius */
+            border-spacing: 0;
+            background: white;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        #searchBar {
+            width: 70%; /* Increased width */
+            padding: 12px;
+            margin: 15px 0; /* Added more gap */
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: #f8f9fa;
+            display: block; /* Ensures it takes full width */
+            margin-left: auto;
+            margin-right: auto;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .delete-btn {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+
+       
+        .edit-btn {
+            background-color: #28a745; /* Green color for edit */
+            color: #fff;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 5px; /* Space between edit and delete buttons */
+            transition: background-color 0.3s;
+        }
+        
+        .edit-btn:hover {
+            background-color: #218838; /* Darker green on hover */
+        }
+        /* Modal Backdrop */
+#editUserModalBackdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+    z-index: 1000;
+}
+
+/* Modal Content */
+#editUserModal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1001;
+    width: 90%;
+    max-width: 400px;
+}
+
+#editUserModal h3 {
+    margin-top: 0;
+    color: #343a40;
+    font-size: 20px;
+    text-align: center;
+}
+
+#editUserModal input,
+#editUserModal select {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+#editUserModal button {
+    width: 48%;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+#editUserModal button:first-of-type {
+    background-color: #28a745; /* Green for Save Changes */
+    color: white;
+}
+
+#editUserModal button:first-of-type:hover {
+    background-color: #218838; /* Darker green on hover */
+}
+
+#editUserModal button:last-of-type {
+    background-color: #dc3545; /* Red for Cancel */
+    color: white;
+}
+
+#editUserModal button:last-of-type:hover {
+    background-color: #c82333; /* Darker red on hover */
+}
+.home-button {
+    position: fixed; /* Fixed position */
+    top: 20px; /* Distance from the top */
+    left: 20px; /* Distance from the left */
+    background-color: #fff; /* White background */
+    color: #007bff; /* Blue text */
+    border: 1px solid #007bff; /* Blue border */
+    padding: 10px 20px; /* Padding for better spacing */
+    border-radius: 6px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    font-size: 14px; /* Font size */
+    font-weight: 500; /* Medium font weight */
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+    z-index: 1000; /* Ensure it's above other elements */
+}
+
+.home-button:hover {
+    background-color: #007bff; /* Blue background on hover */
+    color: #fff; /* White text on hover */
+}
+    </style>
+</head>
+<body>
+    <!-- Home Button -->
+    <button class="home-button" onclick="window.location.href='example1.html'">Home</button>
+
+    <div class="dashboard-wrapper">
+        <div class="dashboard-container">
+            <h2>Admin Dashboard</h2>
+            <input type="text" id="username" placeholder="Username">
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="password" placeholder="Password">
+            <select id="branch">
+                <!-- Branches will be dynamically populated here -->
+            </select>
+            <select id="role">
+                <option value="faculty">Faculty</option>
+                <option value="hod">HOD</option>
+                <option value="principal">Principal</option>
+            </select>
+            <button onclick="addUser()">Add User</button>
+            <button onclick="addBranch()">Add Branch</button>
+            <button onclick="deleteBranch()">Delete Branch</button>
+            <button onclick="viewUsers()">View and Delete Users</button>
+        </div>
+
+        <div class="user-table-container" id="userTableContainer">
+            <h3>User List</h3>
+            <input type="text" id="searchBar" placeholder="Search users..." oninput="filterUsers()">
+            <table id="userTable">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Branch</th>
+                        <th>Role</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+   <!-- Edit User Modal Backdrop -->
+<div id="editUserModalBackdrop" onclick="closeEditModal()"></div>
+
+<!-- Edit User Modal -->
+<div id="editUserModal">
+    <h3>Edit User</h3>
+    <input type="text" id="editUsername" placeholder="Username">
+    <input type="email" id="editEmail" placeholder="Email">
+    <input type="password" id="editPassword" placeholder="Password">
+    <select id="editBranch">
+        <!-- Branches will be dynamically populated here -->
+    </select>
+    <select id="editRole">
+        <option value="faculty">Faculty</option>
+        <option value="hod">HOD</option>
+        <option value="principal">Principal</option>
+    </select>
+    <button onclick="saveUserChanges()">Save Changes</button>
+    <button onclick="closeEditModal()">Cancel</button>
+</div>
+
+    <script>
+        let usersData = []; // Store user data for filtering
+        let currentEditUser = null; // Store the user being edited
+
+        // Fetch branches on page load
+        fetchBranches();
+
+        function fetchBranches() {
+            fetch('get_branches.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const branchSelect = document.getElementById('branch');
+                        branchSelect.innerHTML = '<option value="">Select a branch</option>';
+                        data.branches.forEach(branch => {
+                            branchSelect.innerHTML += `<option value="${branch}">${branch.toUpperCase()}</option>`;
+                        });
+                    } else {
+                        console.error('Failed to fetch branches:', data.message);
+                    }
+                })
+                .catch(error => console.error('Error fetching branches:', error));
+        }
+
+        function addUser() {
+            const formData = new FormData();
+            formData.append('username', document.getElementById('username').value);
+            formData.append('email', document.getElementById('email').value);
+            formData.append('password', document.getElementById('password').value);
+            formData.append('branch', document.getElementById('branch').value);
+            formData.append('role', document.getElementById('role').value);
+
+            fetch('add_user.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert(data); // Show response message
+                viewUsers(); // Refresh the user list after adding a user
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function addBranch() {
+            const branchName = prompt("Enter the name of the new branch:");
+            if (branchName) {
+                fetch('add_branch.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ branch: branchName })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message); // Show success or error message
+                    fetchBranches(); // Refresh the branch dropdown
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        }
+
+        function deleteBranch() {
+            const branchName = prompt("Enter the name of the branch to delete:");
+            if (branchName) {
+                fetch('delete_branch.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ branch: branchName })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message); // Show success or error message
+                    fetchBranches(); // Refresh the branch dropdown
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        }
+
+        function deleteUser(username) {
+            if (!username) {
+                alert("Username is required to delete.");
+                return;
+            }
+
+            fetch('delete_user.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message); // Show success or error message
+                viewUsers(); // Refresh the user list after deleting a user
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function viewUsers() {
+            fetch('getall_users.php')
+            .then(response => response.json())
+            .then(data => {
+                usersData = data.users; // Store user data for filtering
+                renderUserList(usersData);
+                document.getElementById('userTableContainer').style.display = 'block'; // Render the user list
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+
+       
+
+
+        function renderUserList(users) {
+    const userListItems = document.getElementById('userTableBody');
+    userListItems.innerHTML = ''; // Clear the list before rendering
+
+    if (users.length > 0) {
+        users.forEach(user => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${user.username}</td>
+                <td>${user.email}</td>
+                <td>${user.branch}</td>
+                <td>${user.role}</td>
+                <td>
+                    <button class="edit-btn" onclick="openEditModal('${user.username}', '${user.email}', '${user.branch}', '${user.role}')">Edit</button>
+                    <button class="delete-btn" onclick="deleteUser('${user.username}')">Delete</button>
+                </td>
+            `;
+            userListItems.appendChild(row);
+        });
+    } else {
+        userListItems.innerHTML = '<tr><td colspan="5">No users found</td></tr>';
+    }
+}
+
+function openEditModal(username, email, branch, role) {
+    currentEditUser = username; // Store the username of the user being edited
+    document.getElementById('editUsername').value = username;
+    document.getElementById('editEmail').value = email;
+    document.getElementById('editPassword').value = ''; // Clear password field
+    document.getElementById('editRole').value = role;
+
+    fetch('get_branches.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const branchSelect = document.getElementById('editBranch');
+                branchSelect.innerHTML = ''; // Clear previous options
+                data.branches.forEach(b => {
+                    branchSelect.innerHTML += `<option value="${b}">${b.toUpperCase()}</option>`;
+                });
+                branchSelect.value = branch; // Set selected branch
+            }
+        });
+
+    document.getElementById('editUserModalBackdrop').style.display = 'block';
+    document.getElementById('editUserModal').style.display = 'block';
+}
+
+
+function closeEditModal() {
+    // Hide modal and backdrop
+    document.getElementById('editUserModalBackdrop').style.display = 'none';
+    document.getElementById('editUserModal').style.display = 'none';
+}
+
+        function saveUserChanges() {
+            const updatedUser = {
+                username: document.getElementById('editUsername').value,
+                email: document.getElementById('editEmail').value,
+                password: document.getElementById('editPassword').value,
+                branch: document.getElementById('editBranch').value,
+                role: document.getElementById('editRole').value
+            };
+
+            fetch('update_user.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedUser)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message); // Show success or error message
+                closeEditModal();
+                viewUsers(); // Refresh the user list after updating
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function filterUsers() {
+            const searchTerm = document.getElementById('searchBar').value.toLowerCase();
+            const filteredUsers = usersData.filter(user =>
+                user.username.toLowerCase().includes(searchTerm) ||
+                user.email.toLowerCase().includes(searchTerm) ||
+                user.branch.toLowerCase().includes(searchTerm) ||
+                user.role.toLowerCase().includes(searchTerm)
+            );
+            renderUserList(filteredUsers); // Render the filtered user list
+        }
+    </script>
+</body>
+</html>

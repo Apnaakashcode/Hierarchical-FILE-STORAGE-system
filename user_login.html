@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('https://static.vecteezy.com/system/resources/previews/023/308/048/non_2x/abstract-grey-metallic-overlap-on-dark-circle-mesh-pattern-design-modern-luxury-futuristic-background-vector.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #img {
+            position: absolute;
+            top: 20%;
+            left: 15%;
+            transform: translate(-50%, -50%);
+        }
+        .login-container {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            width: 400px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .login-container h2 {
+            color: #fff;
+            margin-bottom: 20px;
+        }
+        .login-container input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+        .login-container input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .login-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #020b15;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        .login-container button:hover {
+            background-color: #0056b3;
+        }
+        #message {
+            color: #ff4d4d;
+            margin-top: 10px;
+        }
+        .forgot-password a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <a href="https://idealtech.edu.in/" target="_blank" id="img">
+        <img src="https://res.cloudinary.com/dx255iu8p/image/upload/v1738846388/Logo_o8ikzt.png" style="width: 350px;" alt="Logo">
+    </a>
+    <div class="login-container">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+        <p id="message"></p>
+        <div class="forgot-password">
+            <a href="#" id="forgotPass">Forgot password?</a>
+        </div>
+    </div>
+
+    <script>
+        // Function to handle login
+     // Function to handle login
+     async function login() {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        const response = await fetch('login.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            // Redirect to email verification page
+            window.location.href = `email_verification.php?user_id=${data.user_id}`;
+        } else {
+            document.getElementById('message').textContent = data.message;
+        }
+    }
+
+    // Function to handle forgot password
+    document.getElementById('forgotPass').addEventListener('click', async (e) => {
+        e.preventDefault(); // Prevent the default link behavior
+
+        const username = document.getElementById('username').value;
+
+        if (!username) {
+            document.getElementById('message').textContent = "Please enter your username.";
+            return;
+        }
+
+        // Fetch user details (including user_id) based on the username
+        const response = await fetch('fetch_user.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            // Redirect to email verification page with user_id
+            window.location.href = `email_verification.php?user_id=${data.user_id}&forgot_password=1`;
+        } else {
+            document.getElementById('message').textContent = data.message;
+        }
+    });
+    </script>
+</body>
+</html>
